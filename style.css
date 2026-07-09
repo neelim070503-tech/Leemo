@@ -1,0 +1,845 @@
+:root {
+  --bg: #0c0c0d;
+  --text: #f2f0ec;
+  --muted: #7d7d7a;
+  --line: #232325;
+  --gx: 30%;   /* gloss highlight position, updated by JS on mouse move */
+  --gy: 12%;
+  --display: "Anton", "Impact", "Haettenschweiler", "Arial Narrow", sans-serif;
+  --gold: #E5C07A;
+}
+
+/* MIRAMAX-style headings: gold with a hard black 3D block shadow */
+.tagline,
+.text-section h2,
+.showreel-caption,
+.ht-name {
+  color: #F5F5DC;
+}
+
+.work-meta .title {
+  color: #F5F5DC;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden; /* clip the scroll-driven heading drift */
+}
+
+/* Full-page fixed background image */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: #677E61;
+  z-index: -3;
+}
+
+/* Glossy sheen + dark scrim over the image */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    /* mouse-following reflective highlight */
+    radial-gradient(45% 55% at var(--gx) var(--gy),
+      rgba(255, 255, 255, 0.22),
+      rgba(255, 255, 255, 0) 60%),
+    /* strong diagonal gloss streak */
+    linear-gradient(118deg,
+      rgba(255, 255, 255, 0.28) 0%,
+      rgba(255, 255, 255, 0.10) 22%,
+      rgba(255, 255, 255, 0) 42%),
+    /* soft top glow */
+    radial-gradient(130% 90% at 50% -12%,
+      rgba(255, 255, 255, 0.16),
+      rgba(255, 255, 255, 0) 55%),
+    /* edge vignette for depth */
+    radial-gradient(120% 120% at 50% 50%,
+      rgba(0, 0, 0, 0) 55%,
+      rgba(0, 0, 0, 0.18) 100%),
+    /* base tint */
+    rgba(8, 8, 10, 0.06);
+  transition: background 0.15s ease-out;
+  z-index: -2;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Cinematic intro loader */
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;                /* above everything, incl. header (100) + cursor (9999) */
+  background: #0c0c0d;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5vh;
+  transition: transform 1s cubic-bezier(0.76, 0, 0.24, 1);
+  will-change: transform;
+}
+
+/* the color-wipe: overlay slides up to reveal the page */
+.loader.done {
+  transform: translateY(-100%);
+  pointer-events: none;
+}
+
+.loader-logo {
+  height: clamp(60px, 9vw, 92px);
+  width: auto;
+  opacity: 0;
+  transform: scale(0.92);
+  animation: loaderLogoIn 1.1s cubic-bezier(0.2, 0.7, 0.2, 1) forwards 0.1s;
+  filter: drop-shadow(0 10px 34px rgba(0, 0, 0, 0.55));
+}
+
+@keyframes loaderLogoIn {
+  to { opacity: 1; transform: scale(1); }
+}
+
+.loader-count {
+  font-family: var(--display);
+  font-size: clamp(48px, 12vw, 150px);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: #F5F5DC;
+}
+
+.loader-bar {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 3px;
+  background: rgba(245, 245, 220, 0.14);
+  overflow: hidden;
+}
+
+.loader-bar-fill {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: var(--gold);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loader-logo { animation-duration: 0.3s; }
+  .loader { transition-duration: 0.4s; }
+}
+
+/* Header */
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 32px;
+  color: #fff;
+  z-index: 100;
+}
+
+.brand {
+  font-family: var(--display);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  font-size: 18px;
+  display: block;
+  line-height: 0;
+}
+
+.brand-logo {
+  height: 52px;
+  width: auto;
+  display: block;
+  transform-origin: left center;
+  transition: transform 0.2s ease-out;
+}
+
+/* Centered page title sitting in the header band */
+.page-heading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 88px;                 /* matches the fixed header's height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 101;
+  margin: 0;
+  pointer-events: none;         /* never intercept clicks on the logo/nav */
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(22px, 3.4vw, 48px);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #F5F5DC;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.45);
+  will-change: transform;
+}
+
+/* Mascot that slides in on scroll and shoves the title off to the right */
+.mascot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  /* Scales with the heading (clamp(22px, 3.4vw, 48px)) — roughly 1.7x its height
+     so the character reads as tall as the word it is shoving. */
+  height: clamp(38px, 5.8vw, 82px);
+  width: auto;
+  margin-top: calc((88px - clamp(38px, 5.8vw, 82px)) / 2); /* vertically centre in the header band */
+  z-index: 100;                 /* just under the heading (101) so the title stays on top */
+  pointer-events: none;
+  will-change: transform;
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.5));
+  transform: translateX(-160%); /* parked off-screen left until JS positions it */
+}
+
+@media (max-width: 720px) {
+  .mascot { display: none; }
+}
+
+.nav {
+  display: flex;
+  gap: 28px;
+}
+
+.nav a {
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  opacity: 0.9;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  transition: opacity 0.2s ease;
+}
+
+.nav a:hover {
+  opacity: 1;
+}
+
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* Intro — top padding reserves the space where the video banner appears
+   (the video itself is fixed, so this keeps the tagline positioned below it) */
+.intro {
+  padding: calc(108px + 70vh) 32px 12vh;
+}
+
+/* Hero video: fixed full-viewport layer, clipped to a banner at rest,
+   grows to a full background as you scroll (driven by JS via clip-path). */
+.hero-video {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  overflow: hidden;
+  clip-path: inset(108px 32px 42vh 32px round 6px);
+  will-change: clip-path;
+}
+
+.hero-video video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: scale(1.06); /* hides blurred edges */
+  filter: blur(var(--hv-blur, 0px));
+}
+
+/* Darkening scrim that ramps up as the video becomes the background */
+.hero-video::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 10, 6, var(--hv-scrim, 0));
+  pointer-events: none;
+}
+
+.hero-video-hint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.tagline {
+  font-family: var(--display);
+  font-size: clamp(34px, 6vw, 76px);
+  line-height: 1.02;
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+  max-width: 900px;
+}
+
+/* Circular highlight: a soft disc scales in behind a word when the cursor touches it.
+   The white fill blends with whatever sits behind it (mix-blend difference), so it reads
+   as the lavender badge over the green header — and a bright badge over the dark sections. */
+.word {
+  display: inline-block;
+  position: relative;
+  /* springy overshoot so each stepped scroll move lands with a satisfying snap */
+  transition: transform 0.42s cubic-bezier(0.34, 1.56, 0.64, 1),
+              color 0.2s ease;
+}
+.word:hover {
+  color: #000;   /* word turns black to read against the lavender disc */
+}
+.word::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  /* hugs short words as a circle, stretches to a rounded badge on longer ones */
+  width: max(2.15em, calc(100% + 0.6em));
+  height: 2.15em;
+  transform: translate(-50%, -50%) scale(0.2);
+  border-radius: 999px;
+  background: #fff;
+  mix-blend-mode: difference;
+  opacity: 0;
+  z-index: -1;                   /* sits behind the letters */
+  pointer-events: none;
+  transition: transform 0.34s cubic-bezier(0.34, 1.56, 0.64, 1),
+              opacity 0.22s ease;
+}
+.word:hover::before {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+.scroll-hint {
+  display: block;
+  margin-top: 40px;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  animation: bob 2s ease-in-out infinite;
+}
+
+@keyframes bob {
+  0%, 100% { transform: translateY(0); opacity: 0.5; }
+  50% { transform: translateY(6px); opacity: 1; }
+}
+
+/* Scattered parallax gallery */
+.scatter {
+  position: relative;
+  width: 100%;
+  height: 200vh;              /* tall canvas the works are scattered across */
+  margin-bottom: 6vh;
+  overflow: hidden;          /* clip works that bleed past the edges */
+}
+
+.work {
+  position: absolute;
+  display: block;
+  will-change: transform;
+  z-index: 1;
+}
+
+.work:hover {
+  z-index: 10;               /* overlapping work jumps to front on hover */
+}
+
+.thumb {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 20 / 13;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+  /* Glass */
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 4px;
+  backdrop-filter: blur(9px) saturate(130%);
+  -webkit-backdrop-filter: blur(9px) saturate(130%);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45),
+              inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  transition: transform 0.7s ease, box-shadow 0.6s ease, border-color 0.6s ease;
+}
+
+/* Diagonal gloss sheen */
+.thumb::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    130deg,
+    rgba(255, 255, 255, 0.28) 0%,
+    rgba(255, 255, 255, 0.08) 24%,
+    rgba(255, 255, 255, 0) 48%
+  );
+  pointer-events: none;
+}
+
+.work:hover .thumb {
+  transform: scale(1.02);
+  border-color: rgba(255, 255, 255, 0.32);
+  box-shadow: 0 26px 70px rgba(0, 0, 0, 0.55),
+              inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+/* Big centered title revealed on hover */
+.hover-title {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  font-family: var(--display);
+}
+
+.hover-title.show {
+  opacity: 1;
+}
+
+.ht-name {
+  display: block;
+  font-size: clamp(44px, 9vw, 130px);
+  line-height: 0.95;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+.ht-credit {
+  display: block;
+  margin-top: 18px;
+  font-size: clamp(13px, 1.4vw, 18px);
+  letter-spacing: 0.04em;
+}
+
+/* Translucent placeholder gradients — swap these for your own stills.
+   Using rgba so the background image shows through the frosted glass. */
+.thumb-1 { background-image: linear-gradient(135deg, rgba(43,43,48,0.55), rgba(85,86,95,0.45)); }
+.thumb-2 { background-image: linear-gradient(135deg, rgba(107,91,79,0.55), rgba(47,38,32,0.45)); }
+.thumb-3 { background-image: linear-gradient(135deg, rgba(51,65,79,0.55), rgba(26,32,41,0.45)); }
+.thumb-4 { background-image: linear-gradient(135deg, rgba(74,64,56,0.55), rgba(122,106,92,0.45)); }
+.thumb-5 { background-image: linear-gradient(135deg, rgba(80,74,92,0.55), rgba(38,34,48,0.45)); }
+.thumb-6 { background-image: linear-gradient(135deg, rgba(207,199,186,0.5), rgba(154,145,134,0.4)); }
+.thumb-7 { background-image: linear-gradient(135deg, rgba(41,50,59,0.55), rgba(77,91,102,0.45)); }
+.thumb-8 { background-image: linear-gradient(135deg, rgba(92,74,68,0.55), rgba(46,35,32,0.45)); }
+
+.work-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-top: 12px;
+  font-size: 13px;
+}
+
+.num {
+  color: var(--muted);
+  min-width: 32px;
+  letter-spacing: 0.05em;
+}
+
+.title {
+  font-family: var(--display);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  font-size: 15px;
+}
+
+.credit {
+  color: var(--muted);
+}
+
+/* Text sections */
+.text-section {
+  border-top: 1px solid var(--line);
+  padding: 90px 32px;
+  max-width: 760px;
+}
+
+.text-section h2 {
+  font-family: var(--display);
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: #F5F5DC;
+  margin-bottom: 24px;
+}
+
+.text-section p {
+  font-size: clamp(18px, 2.2vw, 26px);
+  line-height: 1.4;
+  font-weight: 400;
+}
+
+/* Showreel — framed video grows to full screen on scroll */
+.showreel {
+  position: relative;
+  height: 230vh; /* scroll room for the grow */
+}
+
+.showreel-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3.5vh;
+  overflow: hidden;
+}
+
+.showreel-caption {
+  font-family: var(--display);
+  font-size: clamp(28px, 4.2vw, 60px);
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  color: #F5F5DC;
+  text-align: center;
+  opacity: 0;
+  transform: scale(0.55);
+  transition: opacity 0.45s ease, transform 0.6s cubic-bezier(0.34, 1.7, 0.5, 1);
+}
+
+.showreel-caption.pop {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.showreel-note {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  opacity: 0.85;
+  transition: opacity 0.4s ease;
+  animation: notePulse 2.4s ease-in-out infinite;
+}
+
+.showreel-note.hide {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes notePulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.9; }
+}
+
+.showreel-frame {
+  position: relative;
+  width: 42vw;
+  aspect-ratio: 614 / 427; /* matches the old-TV overlay */
+  will-change: width;
+  filter: drop-shadow(0 30px 60px rgba(0, 0, 0, 0.55));
+}
+
+/* Video sits in the TV's transparent screen area */
+.showreel-screen {
+  position: absolute;
+  left: 8.14%;
+  top: 9.6%;
+  width: 64.66%;
+  height: 70.02%;
+  overflow: hidden;
+  z-index: 1;
+  background: #000;
+}
+
+.showreel-screen video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Old-TV overlay on top (screen area is transparent) */
+.showreel-tv {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+  display: block;
+}
+
+.showreel-hint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+/* About — two columns, photo slides in from the left on scroll */
+.about {
+  max-width: none;
+}
+
+.about-inner {
+  display: flex;
+  align-items: center;
+  gap: 6vw;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.about-text {
+  flex: 1 1 auto;
+  max-width: 620px;
+}
+
+.about-photo-wrap {
+  flex: 0 0 36%;
+}
+
+.about-photo {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 18px;
+  border: 3px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4),
+              inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transform: translateX(-460px);
+  opacity: 0;
+  will-change: transform, opacity;
+  transition: transform 0.18s ease-out, opacity 0.4s ease;
+}
+
+.services-list {
+  list-style: none;
+}
+
+.services-list li {
+  font-size: clamp(18px, 2.2vw, 26px);
+  line-height: 1.4;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.services-list li:last-child {
+  border-bottom: none;
+}
+
+/* Footer */
+.site-footer {
+  border-top: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 40px 32px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.footer-social {
+  display: flex;
+  gap: 20px;
+}
+
+.footer-social a:hover,
+.footer-left a:hover {
+  color: var(--text);
+}
+
+/* Scroll-reveal motion (only active when JS is on) */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.js .reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+.js .fade-in {
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+.js .fade-in.is-in {
+  opacity: 1;
+}
+
+/* Custom cursor */
+body.custom-cursor,
+body.custom-cursor * {
+  cursor: none;
+}
+
+.cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  mix-blend-mode: difference;
+  transition: width 0.28s ease, height 0.28s ease,
+              background-color 0.28s ease, border-color 0.28s ease;
+}
+
+.cursor .cursor-label {
+  font-family: var(--display);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #000;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 0.2s ease, transform 0.25s ease;
+}
+
+.cursor.grow {
+  width: 44px;
+  height: 44px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-color: transparent;
+}
+
+.cursor.view {
+  width: 84px;
+  height: 84px;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-color: transparent;
+}
+
+.cursor.view .cursor-label {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Responsive */
+@media (max-width: 720px) {
+  /* Scatter collapses into a simple stacked column */
+  .scatter {
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    padding: 0 24px 8vh;
+  }
+  .scatter .work {
+    position: static !important;
+    width: 100% !important;
+    transform: none !important;
+  }
+  .menu-toggle {
+    display: block;
+  }
+  /* Hero video becomes a simple inline banner on mobile */
+  .intro {
+    padding: 96px 24px 12vh;
+  }
+  .hero-video {
+    position: static;
+    width: 100%;
+    height: 42vh;
+    margin-bottom: 8vh;
+    z-index: auto;
+    border-radius: 6px;
+    clip-path: none !important;
+  }
+  .hero-video video {
+    transform: none;
+    filter: none !important;
+  }
+  .hero-video::after {
+    display: none;
+  }
+  /* Showreel: simple static framed video on mobile (no scrub) */
+  .showreel {
+    height: auto;
+  }
+  .showreel-sticky {
+    position: static;
+    height: auto;
+    padding: 8vh 24px;
+  }
+  .showreel-frame {
+    width: 92vw;
+    height: auto;
+  }
+  /* About stacks on mobile; photo just fades in */
+  .about-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 32px;
+  }
+  .about-photo-wrap {
+    width: 100%;
+    flex: none;
+  }
+  .about-photo {
+    transform: none;
+  }
+  .nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 32px;
+    flex-direction: column;
+    gap: 14px;
+    text-align: right;
+  }
+  .nav.open {
+    display: flex;
+  }
+  .intro {
+    padding: 40vh 24px 12vh;
+  }
+}
