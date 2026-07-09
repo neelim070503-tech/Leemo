@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leemo — AI Art Direction</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Heavy display font, loaded non-blocking (falls back to Arial Black offline) -->
+<link rel="stylesheet" media="print" onload="this.media='all'"
+      href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&display=swap">
+<noscript>
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&display=swap">
+</noscript>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Cinematic intro loader: logo reveal + 0→100% counter, then a color-wipe up -->
+<div class="loader" id="loader">
+  <img class="loader-logo" src="logo.png" alt="LEEMO">
+  <div class="loader-count" id="loaderCount">0%</div>
+  <div class="loader-bar"><span class="loader-bar-fill" id="loaderBar"></span></div>
+</div>
+<noscript><style>.loader { display: none !important; }</style></noscript>
+
+<header class="site-header" id="top">
+  <a class="brand" href="#top" aria-label="LEEMO">
+    <img src="logo.png" alt="LEEMO" class="brand-logo">
+  </a>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">Menu</button>
+  <nav class="nav" id="nav">
+    <a href="#work">Work</a>
+    <a href="#about">About</a>
+    <a href="#services">Services</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
+
+<h1 class="page-heading"><span class="ph-text">Portfolio</span></h1>
+
+<!-- Mascot: slides in on scroll and shoves the "Portfolio" title off to the right -->
+<img class="mascot" id="mascot" src="Assets/Mascot/mascot.png" alt="" aria-hidden="true">
+
+<section class="intro">
+  <div class="hero-video" id="heroWrap">
+    <video id="heroVideo" autoplay muted loop playsinline preload="auto">
+      <source src="hero.mp4" type="video/mp4">
+    </video>
+    <span class="hero-video-hint">Drop <b>hero.mp4</b> in the portfolio folder</span>
+  </div>
+  <p class="tagline">AI art direction with a cinematic eye for contemporary brands.</p>
+  <span class="scroll-hint">Scroll</span>
+</section>
+
+<!-- Scattered, parallax gallery -->
+<main class="scatter" id="work">
+
+  <a class="work" style="top:0vh;   left:-7%;  width:54vw;" data-speed="0.74"
+     data-title="Nocturne" data-credit="Concept series">
+    <div class="thumb thumb-1"></div>
+    <div class="work-meta"><span class="num">I</span><span class="title">Nocturne</span></div>
+  </a>
+
+  <a class="work" style="top:16vh;  left:83%;  width:13vw;" data-speed="1.34"
+     data-title="Solaire" data-credit="Editorial">
+    <div class="thumb thumb-2"></div>
+    <div class="work-meta"><span class="num">II</span><span class="title">Solaire</span></div>
+  </a>
+
+  <a class="work" style="top:34vh;  left:31%;  width:31vw;" data-speed="1.20"
+     data-title="Blue Hour" data-credit="Campaign">
+    <div class="thumb thumb-3"></div>
+    <div class="work-meta"><span class="num">III</span><span class="title">Blue Hour</span></div>
+  </a>
+
+  <a class="work" style="top:56vh;  left:59%;  width:52vw;" data-speed="0.70"
+     data-title="Atelier" data-credit="Brand film">
+    <div class="thumb thumb-4"></div>
+    <div class="work-meta"><span class="num">IV</span><span class="title">Atelier</span></div>
+  </a>
+
+  <a class="work" style="top:88vh;  left:2%;   width:13vw;" data-speed="1.38"
+     data-title="Mirage" data-credit="Personal">
+    <div class="thumb thumb-5"></div>
+    <div class="work-meta"><span class="num">V</span><span class="title">Mirage</span></div>
+  </a>
+
+  <a class="work" style="top:104vh; left:33%;  width:27vw;" data-speed="0.88"
+     data-title="Ivory" data-credit="Product">
+    <div class="thumb thumb-6"></div>
+    <div class="work-meta"><span class="num">VI</span><span class="title">Ivory</span></div>
+  </a>
+
+  <a class="work" style="top:138vh; left:-5%;  width:58vw;" data-speed="1.12"
+     data-title="Voyage" data-credit="Campaign">
+    <div class="thumb thumb-7"></div>
+    <div class="work-meta"><span class="num">VII</span><span class="title">Voyage</span></div>
+  </a>
+
+  <a class="work" style="top:160vh; left:66%;  width:20vw;" data-speed="1.30"
+     data-title="Halo" data-credit="Concept series">
+    <div class="thumb thumb-8"></div>
+    <div class="work-meta"><span class="num">VIII</span><span class="title">Halo</span></div>
+  </a>
+
+</main>
+
+<!-- Big centered title that appears on hover -->
+<div class="hover-title" id="hoverTitle" aria-hidden="true">
+  <span class="ht-name"></span>
+  <span class="ht-credit"></span>
+</div>
+
+<!-- Showreel: framed video that grows to fill the screen on scroll -->
+<section class="showreel" id="showreel">
+  <div class="showreel-sticky">
+    <div class="showreel-frame" id="showreelFrame">
+      <div class="showreel-screen">
+        <video id="showreelVideo" autoplay muted loop playsinline preload="auto">
+          <source src="showreel.mp4" type="video/mp4">
+          <source src="hero.mp4" type="video/mp4">
+        </video>
+        <span class="showreel-hint">Drop <b>showreel.mp4</b></span>
+      </div>
+      <img class="showreel-tv" src="tv.png" alt="" aria-hidden="true">
+    </div>
+    <h2 class="showreel-caption" id="showreelCaption">AI ART DIRECTION</h2>
+    <span class="showreel-note" id="showreelNote">↻ Click the TV to switch</span>
+  </div>
+</section>
+
+<section class="text-section about" id="about">
+  <div class="about-inner">
+    <div class="about-text">
+      <h2>About</h2>
+      <p>
+        I'm Leemo — an AI artist and art director. I use generative tools to
+        craft cinematic imagery and visual identities for brands, blending
+        strategy with a distinct, contemporary aesthetic. Replace this with
+        your own story.
+      </p>
+    </div>
+    <div class="about-photo-wrap">
+      <img src="me.jpg" alt="Leemo" class="about-photo" id="aboutPhoto">
+    </div>
+  </div>
+</section>
+
+<section class="text-section" id="services">
+  <h2>Services</h2>
+  <ul class="services-list">
+    <li>AI art direction &amp; concept development</li>
+    <li>Cinematic image &amp; video generation</li>
+    <li>Brand campaigns &amp; visual identity</li>
+    <li>Editorial &amp; product visuals</li>
+  </ul>
+</section>
+
+<footer class="site-footer" id="contact">
+  <div class="footer-left">
+    <a href="mailto:leemo@keyframe.art">leemo@keyframe.art</a>
+  </div>
+  <div class="footer-social">
+    <a href="#">Instagram</a>
+    <a href="#">Behance</a>
+    <a href="#">LinkedIn</a>
+  </div>
+  <div class="footer-legal">
+    <span>&copy; Leemo, <span id="year"></span></span>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
